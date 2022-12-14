@@ -62,13 +62,25 @@ export const mixin = {
   },
 
   _setSimpleSearchConditions(conditions, fromHistory) {
-    for (const conditionKey in conditions) {
-      this._store.simpleSearchConditions[conditionKey] =
-        conditions[conditionKey];
+    // update store
+    const keys = Array.from(
+      new Set(
+        Object.assign(
+          Object.keys(conditions),
+          Object.keys(this._store.simpleSearchConditions)
+        )
+      )
+    ).filter((key) => key !== 'mode');
+    for (const key of keys) {
+      if (conditions[key]) {
+        this._store.simpleSearchConditions[key] = conditions[key];
+      } else {
+        delete this._store.simpleSearchConditions[key];
+      }
     }
-    // URIパラメータに反映
+    // reflected in URL parameters
     if (!fromHistory) this._reflectSimpleSearchConditionToURI();
-    // 検索条件として成立していれば、検索開始
+    // if the search condition is satisfied, search starts
     if (this._isReadySearch) {
       this._notify('simpleSearchConditions');
       this.setData('appStatus', 'searching');
@@ -205,7 +217,6 @@ export const mixin = {
 
   // ヒストリーが変更されたら、URL変数を取得し検索条件を更新
   _popstate(_e) {
-    console.log(_e);
     const URIParameters = this._getURLParameters();
     this._setSimpleSearchConditions(URIParameters, true);
   },
