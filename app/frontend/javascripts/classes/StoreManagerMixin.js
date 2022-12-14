@@ -1,4 +1,3 @@
-import deparam from 'deparam.js';
 import { API_URL } from '../global.js';
 import { debounce } from '../utils/debounce.js';
 
@@ -70,7 +69,7 @@ export const mixin = {
           Object.keys(this._store.simpleSearchConditions)
         )
       )
-    ).filter((key) => key !== 'mode');
+    );
     for (const key of keys) {
       if (conditions[key]) {
         this._store.simpleSearchConditions[key] = conditions[key];
@@ -179,8 +178,7 @@ export const mixin = {
       this._store.simpleSearchConditions
     );
     // remove uri parameters temporally
-    this._URIParameters = {};
-    this._URIParameters.mode = 'simple';
+    this._URIParameters = { mode: 'simple' };
     // synthesize parameters
     Object.assign(this._URIParameters, diffConditions);
     console.log(this._URIParameters);
@@ -194,9 +192,9 @@ export const mixin = {
   },
 
   _reflectAdvancedSearchConditionToURI() {
-    console.log(this._URIParameters);
-    console.log(this._store.advancedSearchConditions);
-    this._URIParameters.mode = 'advanced';
+    // remove uri parameters temporally
+    this._URIParameters = { mode: 'advanced' };
+    // synthesize parameters
     Object.assign(this._URIParameters, this._store.advancedSearchConditions);
     window.history.pushState(
       this._URIParameters,
@@ -218,7 +216,16 @@ export const mixin = {
   // ヒストリーが変更されたら、URL変数を取得し検索条件を更新
   _popstate(_e) {
     const URIParameters = this._getURLParameters();
-    this._setSimpleSearchConditions(URIParameters, true);
+    const mode = URIParameters.mode || this._store.searchMode;
+    delete URIParameters.mode;
+    switch (mode) {
+      case 'simple':
+        this._setSimpleSearchConditions(URIParameters, true);
+        break;
+      case 'advanced':
+        this.setAdvancedSearchCondition(URIParameters, true);
+        break;
+    }
   },
 
   // Search *******************************************
