@@ -11,7 +11,7 @@ export const mixin = {
   initSearchCondition() {
     this._isReady = false;
     this._fetching = false;
-    this._URIParameters = deparam(window.location.search.substr(1));
+    this._URIParameters = this._getURLParameters();
     // events
     window.addEventListener('popstate', this._popstate.bind(this));
     this.bind('searchMode', this);
@@ -171,29 +171,42 @@ export const mixin = {
     this._URIParameters.mode = 'simple';
     // synthesize parameters
     Object.assign(this._URIParameters, diffConditions);
+    console.log(this._URIParameters);
     window.history.pushState(
       this._URIParameters,
       '',
-      `${window.location.origin}${window.location.pathname}?${$.param(
+      `${window.location.origin}${window.location.pathname}?${JSON.stringify(
         this._URIParameters
       )}`
     );
   },
 
   _reflectAdvancedSearchConditionToURI() {
+    console.log(this._URIParameters);
+    console.log(this._store.advancedSearchConditions);
     this._URIParameters.mode = 'advanced';
+    Object.assign(this._URIParameters, this._store.advancedSearchConditions);
     window.history.pushState(
       this._URIParameters,
       '',
-      `${window.location.origin}${window.location.pathname}?${$.param(
+      `${window.location.origin}${window.location.pathname}?${JSON.stringify(
         this._URIParameters
       )}`
     );
   },
 
+  _getURLParameters() {
+    try {
+      return JSON.parse(decodeURIComponent(window.location.search.substr(1)));
+    } catch (e) {
+      return {};
+    }
+  },
+
   // ヒストリーが変更されたら、URL変数を取得し検索条件を更新
   _popstate(_e) {
-    const URIParameters = deparam(window.location.search.substr(1));
+    console.log(_e);
+    const URIParameters = this._getURLParameters();
     this._setSimpleSearchConditions(URIParameters, true);
   },
 
@@ -354,10 +367,11 @@ export const mixin = {
         case 'simple':
           this.setSimpleSearchCondition({});
           break;
-        case 'advanced': {
-          const condition = this._store.advancedSearchConditions;
-          this.setAdvancedSearchCondition(condition);
-        }
+        case 'advanced':
+          {
+            const condition = this._store.advancedSearchConditions;
+            this.setAdvancedSearchCondition(condition);
+          }
           break;
       }
       // start search
