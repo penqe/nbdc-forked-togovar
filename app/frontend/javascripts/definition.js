@@ -16,6 +16,6 @@ export const CONDITION_TYPE = {
 };
 
 export const CONDITION_ITEM_TYPE = {
-  condition: 0,
-  group: 1,
+  condition: 'condition',
+  group: 'group',
 };

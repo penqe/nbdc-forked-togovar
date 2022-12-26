@@ -28,9 +28,11 @@ export default class AdvancedSearchBuilderView {
 
   // public methods
 
-  // advancedSearchConditions(values) {
-  //   console.log(values);
-  // }
+  advancedSearchConditions(conditions) {
+    // clear condition
+    this._deleteAllConditions();
+    // update conditions
+  }
 
   /**
    *
@@ -71,7 +73,6 @@ export default class AdvancedSearchBuilderView {
   // }
 
   changeCondition() {
-    const query = this._rootGroup.query;
     this.search();
   }
 
@@ -135,9 +136,12 @@ export default class AdvancedSearchBuilderView {
     this.changeCondition();
   }
 
+  _deleteAllConditions() {
+    console.log(this._rootGroup);
+  }
+
   search() {
     const query = this._rootGroup.query;
-
     StoreManager.setAdvancedSearchCondition(query);
   }
 
@@ -157,7 +161,11 @@ export default class AdvancedSearchBuilderView {
     // add
     switch (selectingConditionView.type) {
       case CONDITION_ITEM_TYPE.condition:
-        // TODO: コンディションを選択していた場合に、その後ろに新規条件を追加
+        selectingConditionView.parentView.addNewConditionItem(
+          conditionType,
+          options,
+          selectingConditionView.elm
+        );
         break;
       case CONDITION_ITEM_TYPE.group:
         selectingConditionView.addNewConditionItem(conditionType, options);

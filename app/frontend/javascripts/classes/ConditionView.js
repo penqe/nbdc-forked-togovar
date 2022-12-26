@@ -16,7 +16,7 @@ export default class ConditionItemView {
     this._elm = document.createElement('div');
     this._elm.classList.add('advanced-search-condition-view');
     this._elm.delegate = this;
-    parentView.container.insertBefore(this._elm, referenceElm);
+    parentView.container.insertBefore(this._elm, referenceElm?.nextSibling);
 
     // event
     // let eventTarget;
