@@ -16,6 +16,7 @@ export const mixin = {
     this.bind('searchMode', this);
   },
 
+  // called once when app is launched
   readySearch(callback) {
     // get master data of conditions
     const json = require('../../assets/search_conditions.json');
@@ -29,7 +30,7 @@ export const mixin = {
       case 'simple':
         Object.assign(
           simpleSearchConditions,
-          this._extractSearchCondition(this._URIParameters)
+          this._extractSimpleSearchCondition(this._URIParameters)
         );
         break;
       case 'advanced':
@@ -54,7 +55,7 @@ export const mixin = {
     if (!this._isReadySearch) return;
     this._store.advancedSearchConditions = conditions;
     // convert queries to URL parameters
-    if (!fromHistory) this._reflectAdvancedSearchConditionToURI();
+    if (!fromHistory) this._reflectSearchConditionToURI('advanced');
     this._notify('advancedSearchConditions');
     this.setData('appStatus', 'searching');
     this._search(0, true);
@@ -78,7 +79,7 @@ export const mixin = {
       }
     }
     // reflected in URL parameters
-    if (!fromHistory) this._reflectSimpleSearchConditionToURI();
+    if (!fromHistory) this._reflectSearchConditionToURI('simple');
     // if the search condition is satisfied, search starts
     if (this._isReadySearch) {
       this._notify('simpleSearchConditions');
@@ -117,10 +118,6 @@ export const mixin = {
     return this._copy(this._store.simpleSearchConditions[key]);
   },
 
-  // getAdvancedSearchCondition(key) {
-  //   return this._copy(this._store.advancedSearchConditions[key]);
-  // },
-
   getSimpleSearchConditionMaster(key) {
     return this.getData('simpleSearchConditionsMaster').find(
       (condition) => condition.id === key
@@ -128,7 +125,7 @@ export const mixin = {
   },
 
   // デフォルト値と異なる検索条件を抽出
-  _extractSearchCondition(condition) {
+  _extractSimpleSearchCondition(condition) {
     const simpleSearchConditionsMaster = this.getData(
       'simpleSearchConditionsMaster'
     );
@@ -173,29 +170,15 @@ export const mixin = {
   },
 
   // update uri parameters
-  _reflectSimpleSearchConditionToURI() {
-    const diffConditions = this._extractSearchCondition(
-      this._store.simpleSearchConditions
-    );
+  _reflectSearchConditionToURI(mode) {
+    const conditions =
+      mode === 'simple'
+        ? this._extractSimpleSearchCondition(this._store.simpleSearchConditions)
+        : this._store.advancedSearchConditions;
     // remove uri parameters temporally
-    this._URIParameters = { mode: 'simple' };
+    this._URIParameters = { mode };
     // synthesize parameters
-    Object.assign(this._URIParameters, diffConditions);
-    console.log(this._URIParameters);
-    window.history.pushState(
-      this._URIParameters,
-      '',
-      `${window.location.origin}${window.location.pathname}?${JSON.stringify(
-        this._URIParameters
-      )}`
-    );
-  },
-
-  _reflectAdvancedSearchConditionToURI() {
-    // remove uri parameters temporally
-    this._URIParameters = { mode: 'advanced' };
-    // synthesize parameters
-    Object.assign(this._URIParameters, this._store.advancedSearchConditions);
+    Object.assign(this._URIParameters, conditions);
     window.history.pushState(
       this._URIParameters,
       '',
@@ -275,7 +258,9 @@ export const mixin = {
           case 'simple':
             {
               const conditions = $.param(
-                this._extractSearchCondition(this._store.simpleSearchConditions)
+                this._extractSimpleSearchCondition(
+                  this._store.simpleSearchConditions
+                )
               );
               path = `${API_URL}/search?offset=${offset - (offset % LIMIT)}${
                 conditions ? '&' + conditions : ''
