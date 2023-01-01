@@ -29,6 +29,7 @@ export default class AdvancedSearchBuilderView {
   // public methods
 
   advancedSearchConditions(conditions) {
+    console.log(conditions);
     // clear condition
     this._deleteAllConditions();
     // update conditions
@@ -138,6 +139,7 @@ export default class AdvancedSearchBuilderView {
 
   _deleteAllConditions() {
     console.log(this._rootGroup);
+    console.log(this._rootGroup.container.childNodes);
   }
 
   search() {

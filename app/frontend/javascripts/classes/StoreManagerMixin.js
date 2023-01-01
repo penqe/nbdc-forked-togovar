@@ -34,6 +34,8 @@ export const mixin = {
         );
         break;
       case 'advanced':
+        Object.assign(advancedSearchConditions, this._URIParameters);
+        delete advancedSearchConditions.mode;
         break;
     }
     this._store.simpleSearchConditions = simpleSearchConditions;
@@ -52,10 +54,13 @@ export const mixin = {
 
   // in Advanced Search, search criteria are received as queries, not key values.
   setAdvancedSearchCondition(conditions, fromHistory) {
+    console.log(conditions, fromHistory);
     if (!this._isReadySearch) return;
+    // update store
     this._store.advancedSearchConditions = conditions;
     // convert queries to URL parameters
     if (!fromHistory) this._reflectSearchConditionToURI('advanced');
+    // search starts
     this._notify('advancedSearchConditions');
     this.setData('appStatus', 'searching');
     this._search(0, true);
@@ -113,6 +118,8 @@ export const mixin = {
     }
     this._setSimpleSearchConditions(resetConditions);
   },
+
+  resetAdvancedSearchConditions() {},
 
   getSimpleSearchCondition(key) {
     return this._copy(this._store.simpleSearchConditions[key]);
@@ -206,6 +213,7 @@ export const mixin = {
         this._setSimpleSearchConditions(URIParameters, true);
         break;
       case 'advanced':
+        console.log(URIParameters);
         this.setAdvancedSearchCondition(URIParameters, true);
         break;
     }
