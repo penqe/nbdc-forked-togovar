@@ -151,27 +151,30 @@ export default class PanelViewCheckList extends PanelView {
         }
       }
     } else {
-      // not all
-      let isAll = 0;
-      for (const key in this._inputsValues) {
-        if (key !== 'all') {
-          isAll += !this._inputsValues[key].input.checked;
-        }
-      }
-      this._inputsValues.all.input.checked = isAll === 0;
+      this._updateAllButton();
     }
     // Store に検索条件をセット
     const checked = {};
     for (const key in this._inputsValues) {
-      if (key !== 'all') {
-        checked[key] = this._inputsValues[key].input.checked ? '1' : '0';
-      }
+      if (key === 'all') continue;
+      checked[key] = this._inputsValues[key].input.checked ? '1' : '0';
     }
     StoreManager.setSimpleSearchCondition(this.kind, checked);
   }
 
+  _updateAllButton() {
+    let checkedCount = 0;
+    for (const key in this._inputsValues) {
+      if (key === 'all') continue;
+      checkedCount += this._inputsValues[key].input.checked;
+    }
+    const amount = Object.keys(this._inputsValues).length - 1;
+    this._inputsValues.all.input.checked = checkedCount === amount;
+    this._inputsValues.all.input.indeterminate =
+      0 < checkedCount && checkedCount < amount;
+  }
+
   simpleSearchConditions(conditions) {
-    let isAll = 0;
     for (const key in this._inputsValues) {
       if (key === 'all') continue;
       this._inputsValues[key].input.checked = conditions[this.kind]
@@ -180,6 +183,6 @@ export default class PanelViewCheckList extends PanelView {
           : true
         : true;
     }
-    this._inputsValues.all.input.checked = isAll === 0;
+    this._updateAllButton();
   }
 }
