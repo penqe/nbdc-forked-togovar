@@ -5,13 +5,14 @@ import ConditionValueEditorFrequencyCount from './ConditionValueEditorFrequencyC
 import ConditionValueEditorLocation from './ConditionValueEditorLocation.js';
 // import {ADVANCED_CONDITIONS} from '../global.js';
 import { CONDITION_TYPE } from '../definition.js';
-import { ConditionDiseaseSearch } from '../components/ConditionDiseaseSearch/ConditionDiseaseSearch.js';
+// import { ConditionDiseaseSearch } from '../components/ConditionDiseaseSearch/ConditionDiseaseSearch.js';
 import ConditionValueEditorDisease from './ConditionValueEditorDisease.js';
 
-const DISEASE_API_URL =
-  'https://togovar-stg.biosciencedbc.jp/api/search/disease?term=';
+// const DISEASE_API_URL =
+//   'https://togovar-stg.biosciencedbc.jp/api/search/disease?term=';
 export default class ConditionValues {
   constructor(conditionView, defaultValues) {
+    console.log(defaultValues);
     this._conditionView = conditionView;
     this._editors = [];
 
@@ -46,7 +47,8 @@ export default class ConditionValues {
         this._editors.push(
           new ConditionValueEditorCheckboxes(
             this,
-            this._conditionView.conditionType
+            this._conditionView.conditionType,
+            defaultValues
           )
         );
         break;
@@ -87,7 +89,6 @@ export default class ConditionValues {
             this._conditionView.conditionType
           )
         );
-
         break;
       case CONDITION_TYPE.location:
         this._editors.push(

@@ -92,6 +92,8 @@ export default class ConditionItemView extends ConditionView {
     }
     if (defaultValues) {
       // if there is default values, put it in edited
+      if (defaultValues.relation)
+        this._elm.dataset.relation = defaultValues.relation;
       this.doneEditing();
     } else {
       // else start to edit

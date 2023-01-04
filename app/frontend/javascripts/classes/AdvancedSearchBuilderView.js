@@ -19,7 +19,6 @@ export default class AdvancedSearchBuilderView {
     );
 
     // events
-    StoreManager.bind('advancedSearchConditions', this);
     this._defineEvents();
 
     // select conditions
@@ -151,11 +150,9 @@ export default class AdvancedSearchBuilderView {
   }
 
   _buildConditions(conditions) {
-    console.log(conditions);
-
-    // for (const type in conditions) {
-
-    // }
+    for (const type in conditions) {
+      this.addCondition(type, conditions[type]);
+    }
   }
 
   search() {
@@ -170,7 +167,6 @@ export default class AdvancedSearchBuilderView {
    * @param {Object} defaultValues
    */
   addCondition(conditionType, defaultValues) {
-    console.log(conditionType, defaultValues);
     // get selecting condition
     const selectingConditionViews =
       this._selection.getSelectingConditionViews();

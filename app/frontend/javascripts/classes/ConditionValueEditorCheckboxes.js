@@ -2,7 +2,7 @@ import ConditionValueEditor from './ConditionValueEditor.js';
 import { ADVANCED_CONDITIONS } from '../global.js';
 
 export default class ConditionValueEditorCheckboxes extends ConditionValueEditor {
-  constructor(valuesView, conditionType) {
+  constructor(valuesView, conditionType, defaultValues) {
     super(valuesView, conditionType);
 
     // HTML
@@ -63,6 +63,16 @@ export default class ConditionValueEditorCheckboxes extends ConditionValueEditor
           this._update();
         });
       });
+
+    // default values
+    if (defaultValues) {
+      for (const checkbox of this._checkboxes) {
+        checkbox.checked = defaultValues.terms.find(
+          (term) => term === checkbox.value
+        );
+      }
+      this._update();
+    }
   }
 
   // public methods

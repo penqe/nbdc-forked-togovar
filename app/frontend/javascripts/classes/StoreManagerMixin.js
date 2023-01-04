@@ -86,11 +86,10 @@ export const mixin = {
     // reflected in URL parameters
     if (!fromHistory) this._reflectSearchConditionToURI('simple');
     // if the search condition is satisfied, search starts
-    if (this._isReadySearch) {
-      this._notify('simpleSearchConditions');
-      this.setData('appStatus', 'searching');
-      this._search(0, true);
-    }
+    if (!this._isReadySearch) return;
+    this._notify('simpleSearchConditions');
+    this.setData('appStatus', 'searching');
+    this._search(0, true);
   },
 
   resetSimpleSearchConditions() {
