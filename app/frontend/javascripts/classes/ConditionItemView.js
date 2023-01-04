@@ -16,7 +16,7 @@ export default class ConditionItemView extends ConditionView {
     builder,
     parentView,
     conditionType,
-    options,
+    defaultValues,
     referenceElm = null
   ) {
     super(CONDITION_ITEM_TYPE.condition, builder, parentView, referenceElm);
@@ -52,7 +52,7 @@ export default class ConditionItemView extends ConditionView {
     this._editor = body.querySelector(
       ':scope > .advanced-search-condition-editor-view'
     );
-    this._conditionValues = new ConditionValues(this, options);
+    this._conditionValues = new ConditionValues(this, defaultValues);
 
     // events
     // stop propagation
@@ -90,9 +90,15 @@ export default class ConditionItemView extends ConditionView {
         }
       });
     }
-    summary
-      .querySelector(':scope > .buttons > button.edit')
-      .dispatchEvent(new Event('click'));
+    if (defaultValues) {
+      // if there is default values, put it in edited
+      this.doneEditing();
+    } else {
+      // else start to edit
+      summary
+        .querySelector(':scope > .buttons > button.edit')
+        .dispatchEvent(new Event('click'));
+    }
   }
 
   // public methods

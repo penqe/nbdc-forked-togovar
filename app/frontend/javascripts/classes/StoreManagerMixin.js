@@ -131,6 +131,10 @@ export const mixin = {
     );
   },
 
+  getAdvancedSearchConditions() {
+    return this._copy(this._store.advancedSearchConditions);
+  },
+
   // デフォルト値と異なる検索条件を抽出
   _extractSimpleSearchCondition(condition) {
     const simpleSearchConditionsMaster = this.getData(

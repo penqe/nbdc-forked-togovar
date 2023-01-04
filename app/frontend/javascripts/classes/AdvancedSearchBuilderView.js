@@ -24,15 +24,19 @@ export default class AdvancedSearchBuilderView {
 
     // select conditions
     this._selection = new AdvancedSearchSelection(this._rootGroup.elm, this);
+
+    // default condition
+    const conditions = StoreManager.getAdvancedSearchConditions();
+    this.advancedSearchConditions(conditions);
   }
 
   // public methods
 
   advancedSearchConditions(conditions) {
-    console.log(conditions);
     // clear condition
     this._deleteAllConditions();
     // update conditions
+    this._buildConditions(conditions);
   }
 
   /**
@@ -138,8 +142,20 @@ export default class AdvancedSearchBuilderView {
   }
 
   _deleteAllConditions() {
-    console.log(this._rootGroup);
+    // console.log(this._rootGroup);
     console.log(this._rootGroup.container.childNodes);
+    // for (const node of this._rootGroup.container.childNodes) {
+    //   console.log(node);
+    //   node.delegate.remove();
+    // }
+  }
+
+  _buildConditions(conditions) {
+    console.log(conditions);
+
+    // for (const type in conditions) {
+
+    // }
   }
 
   search() {
@@ -148,7 +164,13 @@ export default class AdvancedSearchBuilderView {
   }
 
   // add search condition to the currently selected layer
-  addCondition(conditionType, options) {
+  /**
+   *
+   * @param {String} conditionType // 'type', 'significance', 'disease', e.t.c...
+   * @param {Object} defaultValues
+   */
+  addCondition(conditionType, defaultValues) {
+    console.log(conditionType, defaultValues);
     // get selecting condition
     const selectingConditionViews =
       this._selection.getSelectingConditionViews();
@@ -165,12 +187,15 @@ export default class AdvancedSearchBuilderView {
       case CONDITION_ITEM_TYPE.condition:
         selectingConditionView.parentView.addNewConditionItem(
           conditionType,
-          options,
+          defaultValues,
           selectingConditionView.elm
         );
         break;
       case CONDITION_ITEM_TYPE.group:
-        selectingConditionView.addNewConditionItem(conditionType, options);
+        selectingConditionView.addNewConditionItem(
+          conditionType,
+          defaultValues
+        );
         break;
     }
   }

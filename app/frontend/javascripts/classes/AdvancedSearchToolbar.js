@@ -1,8 +1,16 @@
 import { ADVANCED_CONDITIONS } from '../global.js';
+import AdvancedSearchBuilderView from './AdvancedSearchBuilderView.js';
 
 export default class AdvancedSearchToolbar {
-  constructor(delegate, toolbar) {
-    this._delegate = delegate;
+  #advancedSearchBuilderView;
+
+  /**
+   *
+   * @param {AdvancedSearchBuilderView} advancedSearchBuilderView
+   * @param {HTMLElement} toolbar
+   */
+  constructor(advancedSearchBuilderView, toolbar) {
+    this.#advancedSearchBuilderView = advancedSearchBuilderView;
 
     toolbar.classList.add('advanced-search-toolbar');
 
@@ -67,7 +75,7 @@ export default class AdvancedSearchToolbar {
       </li>
       `
       ).join('')}
-     
+    
     </ul>
     `;
 
@@ -79,22 +87,29 @@ export default class AdvancedSearchToolbar {
         e.stopImmediatePropagation();
         switch (command.dataset.command) {
           case 'add-condition':
-            this._delegate.addCondition(command.dataset.condition, e.detail);
+            {
+              const defaultValue =
+                typeof e.detail === 'object' ? e.detail : null;
+              this.#advancedSearchBuilderView.addCondition(
+                command.dataset.condition,
+                defaultValue
+              );
+            }
             break;
           case 'group':
-            this._delegate.group();
+            this.#advancedSearchBuilderView.group();
             break;
           case 'ungroup':
-            this._delegate.ungroup();
+            this.#advancedSearchBuilderView.ungroup();
             break;
           case 'copy':
-            this._delegate.copy();
+            this.#advancedSearchBuilderView.copy();
             break;
           case 'edit':
-            this._delegate.edit();
+            this.#advancedSearchBuilderView.edit();
             break;
           case 'delete':
-            this._delegate.delete();
+            this.#advancedSearchBuilderView.delete();
             break;
         }
       });
@@ -103,8 +118,8 @@ export default class AdvancedSearchToolbar {
 
   // public methods
 
-  canSearch(can) {
-    if (can) this._searchButton.classList.remove('-disabled');
-    else this._searchButton.classList.add('-disabled');
-  }
+  // canSearch(can) {
+  //   if (can) this._searchButton.classList.remove('-disabled');
+  //   else this._searchButton.classList.add('-disabled');
+  // }
 }
