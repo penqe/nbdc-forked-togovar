@@ -162,13 +162,20 @@ export default class AdvancedSearchBuilderView {
 
   _buildConditions(conditions) {
     console.log(conditions);
+    const conditionViews = [];
     for (const type in conditions) {
       if (type === 'and' || type === 'or') {
         // this.group();
+        const conditionViews2 = [];
+        for (const condition of conditions[type]) {
+          conditionViews2.push(this._buildConditions(condition));
+        }
+        console.log(conditionViews2);
       } else {
-        this.addCondition(type, conditions[type]);
+        conditionViews.push(this.addCondition(type, conditions[type]));
       }
     }
+    return conditionViews;
   }
 
   #search() {
@@ -197,21 +204,25 @@ export default class AdvancedSearchBuilderView {
     this._selection.deselectAllConditions();
 
     // add
+    let addedConditionView;
     switch (selectingConditionView.type) {
       case CONDITION_ITEM_TYPE.condition:
-        selectingConditionView.parentView.addNewConditionItem(
-          conditionType,
-          defaultValues,
-          selectingConditionView.elm
-        );
+        addedConditionView =
+          selectingConditionView.parentView.addNewConditionItem(
+            conditionType,
+            defaultValues,
+            selectingConditionView.elm
+          );
         break;
       case CONDITION_ITEM_TYPE.group:
-        selectingConditionView.addNewConditionItem(
+        addedConditionView = selectingConditionView.addNewConditionItem(
           conditionType,
           defaultValues
         );
         break;
     }
+
+    return addedConditionView;
   }
 
   // private methods
