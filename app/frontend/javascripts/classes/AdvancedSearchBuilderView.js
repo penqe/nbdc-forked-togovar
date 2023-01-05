@@ -7,6 +7,8 @@ import AdvancedSearchSelection from './AdvancedSearchSelection.js';
 import { CONDITION_ITEM_TYPE } from '../definition.js';
 
 export default class AdvancedSearchBuilderView {
+  #isBuildingConditionViews = false;
+
   constructor(elm) {
     this._elm = elm;
     this._container = elm.querySelector(':scope > .inner');
@@ -19,6 +21,7 @@ export default class AdvancedSearchBuilderView {
     );
 
     // events
+    StoreManager.bind('advancedSearchConditions', this);
     this._defineEvents();
 
     // select conditions
@@ -26,16 +29,13 @@ export default class AdvancedSearchBuilderView {
 
     // default condition
     const conditions = StoreManager.getAdvancedSearchConditions();
-    this.advancedSearchConditions(conditions);
+    this.#updateConditionViews(conditions);
   }
 
   // public methods
 
   advancedSearchConditions(conditions) {
-    // clear condition
-    this._deleteAllConditions();
-    // update conditions
-    this._buildConditions(conditions);
+    this.#updateConditionViews(conditions);
   }
 
   /**
@@ -77,7 +77,8 @@ export default class AdvancedSearchBuilderView {
   // }
 
   changeCondition() {
-    this.search();
+    if (this.#isBuildingConditionViews) return;
+    this.#search();
   }
 
   group() {
@@ -140,22 +141,37 @@ export default class AdvancedSearchBuilderView {
     this.changeCondition();
   }
 
+  #updateConditionViews(conditions) {
+    console.log(conditions);
+    this.#isBuildingConditionViews = true;
+    // clear condition
+    this._deleteAllConditions();
+    // update conditions
+    this._buildConditions(conditions);
+    this.#isBuildingConditionViews = false;
+  }
+
   _deleteAllConditions() {
     // console.log(this._rootGroup);
     console.log(this._rootGroup.container.childNodes);
-    // for (const node of this._rootGroup.container.childNodes) {
-    //   console.log(node);
-    //   node.delegate.remove();
-    // }
-  }
-
-  _buildConditions(conditions) {
-    for (const type in conditions) {
-      this.addCondition(type, conditions[type]);
+    for (const node of this._rootGroup.container.childNodes) {
+      console.log(node);
+      node.delegate.remove();
     }
   }
 
-  search() {
+  _buildConditions(conditions) {
+    console.log(conditions);
+    for (const type in conditions) {
+      if (type === 'and' || type === 'or') {
+        // this.group();
+      } else {
+        this.addCondition(type, conditions[type]);
+      }
+    }
+  }
+
+  #search() {
     const query = this._rootGroup.query;
     StoreManager.setAdvancedSearchCondition(query);
   }
@@ -167,6 +183,7 @@ export default class AdvancedSearchBuilderView {
    * @param {Object} defaultValues
    */
   addCondition(conditionType, defaultValues) {
+    console.log(conditionType, defaultValues);
     // get selecting condition
     const selectingConditionViews =
       this._selection.getSelectingConditionViews();
@@ -174,6 +191,7 @@ export default class AdvancedSearchBuilderView {
       selectingConditionViews.length > 0
         ? selectingConditionViews[0]
         : this._rootGroup;
+    console.log(selectingConditionView);
 
     // release exist conditions
     this._selection.deselectAllConditions();
