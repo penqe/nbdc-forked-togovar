@@ -152,10 +152,8 @@ export default class AdvancedSearchBuilderView {
   }
 
   _deleteAllConditions() {
-    // console.log(this._rootGroup);
-    console.log(this._rootGroup.container.childNodes);
-    for (const node of this._rootGroup.container.childNodes) {
-      console.log(node);
+    const nodes = [...this._rootGroup.container.childNodes];
+    for (const node of nodes) {
       node.delegate.remove();
     }
   }
