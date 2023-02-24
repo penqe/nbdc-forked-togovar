@@ -83,6 +83,7 @@ export default class AdvancedSearchBuilderView {
 
   group() {
     const conditionViews = this._selection.getSelectingConditionViews();
+    console.log(conditionViews);
     const parentGroupView = conditionViews[0].parentView;
     // insert position
     const siblingViews = parentGroupView.childViews;
@@ -161,15 +162,29 @@ export default class AdvancedSearchBuilderView {
   _buildConditions(conditions) {
     console.log(conditions);
     const conditionViews = [];
+    const selectingConditionViews = this.selection.getSelectingConditionViews();
+    console.log(...selectingConditionViews);
+    if (selectingConditionViews.length === 0)
+      selectingConditionViews.push(this._rootGroup);
+    console.log(...selectingConditionViews);
     for (const type in conditions) {
       if (type === 'and' || type === 'or') {
         // this.group();
+        // this.selection.deselectAllConditions();
         const conditionViews2 = [];
         for (const condition of conditions[type]) {
-          conditionViews2.push(this._buildConditions(condition));
+          conditionViews2.push(...this._buildConditions(condition));
+        }
+        for (const conditionView of conditionViews2) {
+          this.selection.selectConditionView(conditionView, false);
         }
         console.log(conditionViews2);
+        this.group();
       } else {
+        console.log(this.selection.getSelectingConditionViews());
+        console.log(...selectingConditionViews);
+        this.selection.selectConditionView(selectingConditionViews[0]);
+        console.log(this.selection.getSelectingConditionViews());
         conditionViews.push(this.addCondition(type, conditions[type]));
       }
     }

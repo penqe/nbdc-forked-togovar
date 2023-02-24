@@ -69,7 +69,7 @@ export default class AdvancedSearchSelection {
 
   getSelectingConditionViews() {
     const conditionEls = this._selectionArea.getSelection();
-    if (conditionEls.length > 0) {
+    if (conditionEls.length > 0 && conditionEls[0].parentNode) {
       // sort
       const siblingEls = Array.from(conditionEls[0].parentNode.childNodes);
       conditionEls.sort(
