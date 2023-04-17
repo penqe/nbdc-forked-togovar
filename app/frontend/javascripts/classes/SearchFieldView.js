@@ -1,4 +1,5 @@
 import { CONDITION_TYPE } from '../definition.js';
+import StoreManager from './StoreManager.js';
 
 const NUMBER_OF_SUGGESTS = 10; // TODO: Config
 const SUGGEST_LABELS = {
@@ -35,8 +36,9 @@ export default class SearchFieldView {
     this._suggestDictionaries = _suggestDictionaries;
     this._conditionType = _conditionType;
 
-    this._suggesting = false;
     this._isSimpleSearch = true;
+    this._suggesting = false;
+    StoreManager.setData('suggesting', false);
 
     // make HTML
     _elm.innerHTML = `
@@ -138,12 +140,14 @@ export default class SearchFieldView {
     }
 
     this._suggesting = false;
+    StoreManager.setData('suggesting', false);
     this._suggestView.innerHTML = '';
     this._search();
   }
 
   _suggestHide() {
     this._suggesting = false;
+    StoreManager.setData('suggesting', false);
     this._suggestView.innerHTML = '';
     this.lastValue = '';
   }
@@ -169,6 +173,7 @@ export default class SearchFieldView {
     setTimeout(() => {
       if (this._suggesting) {
         this._suggesting = false;
+        StoreManager.setData('suggesting', false);
         this._suggestView.innerHTML = '';
         this.lastValue = '';
       }
@@ -225,6 +230,7 @@ export default class SearchFieldView {
 
   _createSuggestList(data) {
     this._suggesting = true;
+    StoreManager.setData('suggesting', true);
     this.lastValue = this._field.value;
     this._suggestPosition = { x: -1, y: -1 };
     this._dictionaries = [];
@@ -278,6 +284,7 @@ export default class SearchFieldView {
               this._field.value =
                 e.currentTarget.dataset.alias || e.currentTarget.dataset.value;
               this._suggesting = false;
+              StoreManager.setData('suggesting', false);
               this._suggestView.innerHTML = '';
               this._search();
             });
@@ -318,6 +325,7 @@ export default class SearchFieldView {
           this._field.dataset.value =
             e.target.dataset.value || e.target.parentElement.dataset.value; // text dataset value for query, i.e. "value"
           this._suggesting = false;
+          StoreManager.setData('suggesting', false);
           this._suggestView.innerHTML = '';
           this._search();
         });

@@ -185,7 +185,11 @@ export default class ResultsView {
 
   // 上下カーソルタイプで選択行の移動 & ESCで選択解除
   keydown(e) {
-    if (StoreManager.getData('selectedRow') === undefined) return;
+    if (
+      StoreManager.getData('selectedRow') === undefined ||
+      StoreManager.getData('suggesting') === true
+    )
+      return;
     switch (e.key) {
       case 'ArrowUp': // ↑
         this.shiftSelectedRow(-1);
