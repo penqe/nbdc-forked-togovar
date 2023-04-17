@@ -190,14 +190,8 @@ export default class ResultsView {
       StoreManager.getData('suggesting') === true
     )
       return;
-    if (
-      e.key === 'ArrowUp' ||
-      e.key === 'ArrowDown' ||
-      e.key === 'ArrowLeft' ||
-      e.key === 'ArrowRight'
-    ) {
-      e.preventDefault();
-    }
+
+    e.stopImmediatePropagation();
     switch (e.key) {
       case 'ArrowUp': // ↑
         this.shiftSelectedRow(-1);
