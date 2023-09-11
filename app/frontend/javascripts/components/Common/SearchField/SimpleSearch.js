@@ -6,12 +6,15 @@ import StoreManager from '../../../classes/StoreManager';
 
 import Styles from '../../../../stylesheets/object/component/simple-search.scss';
 
+/**  @typedef {Array<{key: string, value: string}>} ExamplesArray */
+
 export default class SimpleSearch extends LitElement {
   static get properties() {
     return {
       hideSuggestions: { type: Boolean, state: true },
       value: { type: String },
       placeholder: { type: String, attribute: 'placeholder' },
+      /** @type {ExamplesArray} */
       examples: { type: Array },
       suggestAPIURL: { type: String },
       suggestAPIQueryParam: { type: String },
