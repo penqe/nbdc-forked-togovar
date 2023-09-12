@@ -3,7 +3,7 @@ import { map } from 'lit/directives/map.js';
 import { Task } from '@lit-labs/task';
 import { axios } from '../../../utils/cachedAxios';
 
-import './SearchFieldSimple';
+import './SearchFieldOnly';
 import './SearchFieldSuggestionsList';
 
 import Styles from '../../../../stylesheets/object/component/search-field-with-suggestions.scss';
@@ -241,6 +241,8 @@ export default class SearchElementWithSuggestions extends LitElement {
               this.#suggestionKeysArray[this.currentSuggestionColumnIndex]
             ][this.currentSuggestionIndex]
           );
+          // } else if (this.showSuggestions && this.currentSuggestionIndex === -1) {
+          //   this.#apiWithoutSelect(this.term);
         } else {
           //
           this.#hideSuggestions();
@@ -289,6 +291,17 @@ export default class SearchElementWithSuggestions extends LitElement {
     this.#hideSuggestions();
   };
 
+  // #apiWithoutSelect = (term) => {
+  //   this.dispatchEvent(
+  //     new CustomEvent('term-enter', {
+  //       detail: term,
+  //       bubbles: true,
+  //       composed: true,
+  //     })
+  //   );
+  //   this.#hideSuggestions();
+  // };
+
   #handleSuggestionSelected = (e) => {
     this.#select(e.detail);
   };
@@ -318,16 +331,17 @@ export default class SearchElementWithSuggestions extends LitElement {
   }
 
   render() {
-    return html`<search-field-simple
+    return html`
+      <search-field-only
         @change=${debounce(this.#handleInput, 300)}
         @click=${this.#handleClick}
         @focusin=${this.#handleFocusIn}
         @focusout=${this.#handleFocusOut}
         @keydown=${this.#handleUpDownKeys}
-        placeholder=${this.placeholder}
-        value=${this.term}
+        .placeholder=${this.placeholder}
+        .value=${this.term}
         exportparts="input-field"
-      ></search-field-simple>
+      ></search-field-only>
       <div class="suggestions-container">
         ${this.suggestData && this.showSuggestions && !this.hideSuggestions
           ? html`
@@ -352,7 +366,8 @@ export default class SearchElementWithSuggestions extends LitElement {
               })}
             `
           : nothing}
-      </div> `;
+      </div>
+    `;
   }
 
   setTerm(term) {

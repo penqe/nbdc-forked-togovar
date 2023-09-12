@@ -1,19 +1,12 @@
 import { LitElement, html } from 'lit';
+import { customElement } from 'lit/decorators.js';
 import { ref, createRef } from 'lit/directives/ref.js';
-import SimpleSearchStyle from '../../../../stylesheets/object/component/search-field-simple.scss';
+import SimpleSearchStyle from '../../../../stylesheets/object/component/search-field-only.scss';
 
-export default class SearchFieldSimple extends LitElement {
-  #inputRef = createRef();
-  static get properties() {
-    return {
-      value: { type: String },
-      placeholder: { type: String, attribute: 'placeholder' },
-    };
-  }
-
-  static get styles() {
-    return [SimpleSearchStyle];
-  }
+@customElement('search-field-only')
+export default class SearchFieldOnly extends LitElement {
+  static styles = [SimpleSearchStyle];
+  _inputRef = createRef();
 
   /**
    * @description Creates a styled search field
@@ -30,23 +23,32 @@ export default class SearchFieldSimple extends LitElement {
    * ```js
    * render() {
    *   html`
-   *     <search-field-simple placeholder="Search"></search-field-simple>
+   *     <search-field-only placeholder="Search"></search-field-only>
    *   `
    * }
    * ```
    */
+
+  static get properties() {
+    return {
+      value: { type: String },
+      placeholder: { type: String, attribute: 'placeholder' },
+    };
+  }
+
   constructor(element, placeholder) {
     super();
 
     this.value = '';
     this.placeholder = placeholder;
 
+    //varieent idで検索するとき
     if (element) {
       element.appendChild(this);
     }
   }
 
-  #handleInput(e) {
+  _handleInput(e) {
     this.value = e.target.value;
 
     this.dispatchEvent(
@@ -63,8 +65,8 @@ export default class SearchFieldSimple extends LitElement {
   }
 
   willUpdate(changed) {
-    if (changed.has('value') && this.#inputRef.value) {
-      this.#inputRef.value.value = this.value;
+    if (changed.has('value') && this._inputRef.value) {
+      this._inputRef.value.value = this.value;
     }
   }
 
@@ -74,15 +76,13 @@ export default class SearchFieldSimple extends LitElement {
         <div class="field">
           <input
             part="input-field"
-            ${ref(this.#inputRef)}
+            ${ref(this._inputRef)}
             type="text"
-            placeholder="${this.placeholder}"
-            @input=${this.#handleInput}
+            placeholder=${this.placeholder}
+            @input=${this._handleInput}
           />
         </div>
       </div>
     </div>`;
   }
 }
-
-customElements.define('search-field-simple', SearchFieldSimple);

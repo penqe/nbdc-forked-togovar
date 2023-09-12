@@ -1,6 +1,6 @@
 import ConditionValueEditor from './ConditionValueEditor.js';
 import SearchFieldWithSuggestions from '../components/Common/SearchField/SearchFieldWithSuggestions.js';
-import SearchFieldSimple from '../components/Common/SearchField/SearchFieldSimple.js';
+import SearchFieldOnly from '../components/Common/SearchField/SearchFieldOnly.js';
 
 export default class ConditionValueEditorTextField extends ConditionValueEditor {
   /**
@@ -22,7 +22,7 @@ export default class ConditionValueEditorTextField extends ConditionValueEditor 
       this._searchFieldView =
         this._body.querySelector('search-field-with-suggestions') ||
         new SearchFieldWithSuggestions(
-          'Type a gene symbol or name',
+          'BRCA2',
           'https://grch37.togovar.org/api/search/gene',
           'term',
           this._body,
@@ -51,8 +51,8 @@ export default class ConditionValueEditorTextField extends ConditionValueEditor 
       );
     } else if (conditionType === 'id') {
       this._searchFieldView =
-        this._body.querySelector('search-field-simple') ||
-        new SearchFieldSimple(this._body, 'Enter a variant');
+        this._body.querySelector('search-field-only') ||
+        new SearchFieldOnly(this._body, 'rs1489251879');
 
       this._searchFieldView.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
