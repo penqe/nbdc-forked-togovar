@@ -4,10 +4,14 @@ import { map } from 'lit/directives/map.js';
 
 import Styles from '../../../../stylesheets/object/component/simple-search-examples.scss';
 
+/** Class to display simple search examples */
 @customElement('search-field-examples')
-export default class SearchFieldExamples extends LitElement {
+class SearchFieldExamples extends LitElement {
   static styles = [Styles];
 
+  /** Creat a custom event "example-selected"
+   * @private
+   * @param {{key:string, value: string}} example */
   _handleClick(example) {
     this.dispatchEvent(
       new CustomEvent('example-selected', {
@@ -29,3 +33,5 @@ export default class SearchFieldExamples extends LitElement {
     )}`;
   }
 }
+
+export default SearchFieldExamples;
