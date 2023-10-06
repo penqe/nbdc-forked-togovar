@@ -20,21 +20,73 @@ import { debounce } from '../../../utils/debounce';
  * @property {{[key: string]: string}} titleMappings - how to map to the suggestion title
  */
 
+/** Class for search field with suggestions */
 @customElement('search-field-with-suggestions')
 class SearchFieldtWithSuggestions extends LitElement {
   static styles = [Styles];
+  /**
+   * @param {string} placeholder - Placeholder text
+   * @param {string} suggestAPIURL - URL to fetch suggestions from
+   * @param {string} suggestAPIQueryParam - Query parameter to be used for the API call
+   * @param {HTMLElement} element - HTML element to which the search field is attached
+   */
+
+  /** value of the selected suggestion */
+  @property({ type: String | Number })
+  value = '';
+
+  /** label of selected suggestion */
+  @property({ type: String, state: true })
+  label = '';
+
+  @property({ type: Boolean, state: true })
+  showSuggestions = false;
+
+  @property({ type: Number, state: true })
+  currentSuggestionIndex = -1;
+
+  @property({ type: Number, state: true })
+  currentSuggestionColumnIndex = 0;
+
+  /** @property {SearchFieldOptions} options - Options for the search field */
+  @property({ type: Object, state: true })
+  options;
+
+  @property({ type: Array, state: true })
+  suggestData = [];
+
+  /** currently entered text */
+  @property({ type: String })
+  term = '';
+
+  @property({ type: Boolean })
+  hideSuggestions = false;
+
+  @property({ type: String })
+  placeholder;
+
+  /** @property {string} suggestAPIURL */
+  @property()
+  suggestAPIURL;
+
+  /** simpeleでは使用しないので現在はいらない? */
+  // @property({ type: String, reflect: true })
+  // suggestAPIQueryParam
 
   _getSuggestURL = (text) => text;
 
-  /** @type {SearchFieldOptions} */
+  /** @property {SearchFieldOptions} */
   _searchFieldOptions = {};
 
   /** @property {string[]} */
   _suggestionKeysArray = [];
 
+  /**
+   * @private
+   * @param {string} term - input value d*/
   _apiTask = new Task(
     this,
-    async (term) => {
+    debounce(async (term) => {
       if (term.length >= 3) {
         this.showSuggestions = true;
 
@@ -52,32 +104,15 @@ class SearchFieldtWithSuggestions extends LitElement {
         return (this.suggestData = dataToReturn);
       }
       return Promise.resolve(() => (this.showSuggestions = false));
-    },
+    }, 300),
     () => this.term
   );
 
   /**
-   * @param {string} placeholder - Placeholder text
-   * @param {string} suggestAPIURL - URL to fetch suggestions from
-   * @param {string} suggestAPIQueryParam - Query parameter to be used for the API call
-   * @param {HTMLElement} element - HTML element to which the search field is attached
-   * @param {SearchFieldOptions} options - Options for the search field
+   * compute property values that depend on other properties and are used in the rest of the update process
    */
-  constructor(
-    placeholder,
-    suggestAPIURL,
-    suggestAPIQueryParam,
-    element,
-    options
-  ) {
-    super();
-    this.placeholder = placeholder;
-    this.suggestAPIURL = suggestAPIURL;
-    this.suggestAPIQueryParam = suggestAPIQueryParam;
-    this._searchFieldOptions = options;
-
-    if (element) {
-      element.appendChild(this);
+  willUpdate(changedProperties) {
+    if (changedProperties.has('suggestAPIURL')) {
       if (this.suggestAPIQueryParam) {
         this._getSuggestURL = (text) => {
           const url = new URL(this.suggestAPIURL);
@@ -86,68 +121,13 @@ class SearchFieldtWithSuggestions extends LitElement {
         };
       } else {
         this._getSuggestURL = (text) => {
-          return `${this.suggestAPIURL}/${text}`;
-        };
-      }
-    }
-  }
-
-  /** value of the selected suggestion */
-  @property({ type: String, state: true })
-  value = null;
-
-  /** label of selected suggestion */
-  @property({ type: String, state: true })
-  label = '';
-
-  @property({ type: Boolean, state: true })
-  showSuggestions = false;
-
-  @property({ type: Number, state: true })
-  currentSuggestionIndex = -1;
-
-  @property({ type: Number, state: true })
-  currentSuggestionColumnIndex = 0;
-
-  @property({ type: Object, state: true })
-  options;
-
-  @property({ type: Array, state: true })
-  suggestData = [];
-
-  /** currently entered text */
-  @property({ type: String })
-  term = '';
-
-  @property({ type: Boolean })
-  hideSuggestions = false;
-
-  @property({ type: String })
-  placeholder;
-
-  @property({ type: String, reflect: true })
-  suggestAPIURL;
-
-  /** simpeleでは使用しないのでいらない? 将来的にgemeもLitにするのでそのときにいるかも。componentを分けるかもしれないから、いらないかもだけど */
-  // @property({ type: String, reflect: true })
-  // suggestAPIQueryParam
-
-  willUpdate(changed) {
-    if (changed.has('suggestAPIURL') && this.suggestAPIURL) {
-      if (this.suggestAPIQueryParam) {
-        this._getSuggestURL = (text) => {
-          const url = new URL(this.suggestAPIURL);
-          url.searchParams.set(this.suggestAPIQueryParam, text);
-          return url.toString();
-        };
-      } else {
-        this._getSuggestURL = (text) => {
+          console.log(`${this.suggestAPIURL}/${text}`);
           return `${this.suggestAPIURL}/${text}`;
         };
       }
     }
 
-    if (changed.has('options') && this.options) {
+    if (changedProperties.has('options')) {
       this._searchFieldOptions = {
         ...this._searchFieldOptions,
         ...this.options,
@@ -155,9 +135,9 @@ class SearchFieldtWithSuggestions extends LitElement {
     }
   }
 
-  _hideSuggestions = () => {
+  _hideSuggestions() {
     this.showSuggestions = false;
-  };
+  }
 
   _handleStepThroughColumns() {
     if (
@@ -174,6 +154,10 @@ class SearchFieldtWithSuggestions extends LitElement {
     }
   }
 
+  /** Select with keydown(ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Enter, Escape)
+   * @private
+   * @param {Event} e
+   * @returns {void} */
   _handleUpDownKeys = (e) => {
     if (
       e.key === 'ArrowUp' ||
@@ -195,6 +179,7 @@ class SearchFieldtWithSuggestions extends LitElement {
         this.currentSuggestionColumnIndex--;
         this._handleStepThroughColumns();
         break;
+
       case 'ArrowRight':
         if (
           this.currentSuggestionColumnIndex + 1 >
@@ -206,6 +191,7 @@ class SearchFieldtWithSuggestions extends LitElement {
         this.currentSuggestionColumnIndex++;
         this._handleStepThroughColumns();
         break;
+
       case 'ArrowUp':
         if (this.currentSuggestionIndex - 1 < 0) {
           this.currentSuggestionIndex =
@@ -216,6 +202,7 @@ class SearchFieldtWithSuggestions extends LitElement {
         }
         this.currentSuggestionIndex--;
         break;
+
       case 'ArrowDown':
         if (
           this.currentSuggestionIndex + 1 >
@@ -229,27 +216,23 @@ class SearchFieldtWithSuggestions extends LitElement {
         }
         this.currentSuggestionIndex++;
         break;
+
       case 'Enter':
-        if (this.showSuggestions && this.currentSuggestionIndex !== -1) {
+        if (this.currentSuggestionIndex === -1) {
+          this._apiWithoutSelect(this.term);
+        } else if (this.showSuggestions && this.currentSuggestionIndex !== -1) {
           this._select(
             this.suggestData[
               this._suggestionKeysArray[this.currentSuggestionColumnIndex]
             ][this.currentSuggestionIndex]
           );
-          // } else if (this.showSuggestions && this.currentSuggestionIndex === -1) {
-          //   this.#apiWithoutSelect(this.term);
-        } else {
-          //
           this._hideSuggestions();
-          this._handleEnterKey();
         }
-
         break;
+
       case 'Escape':
         if (this.showSuggestions) {
           this._hideSuggestions();
-        } else {
-          this.showSuggestions = true;
         }
         break;
       default:
@@ -257,18 +240,9 @@ class SearchFieldtWithSuggestions extends LitElement {
     }
   };
 
-  _handleEnterKey() {
-    this.dispatchEvent(
-      new CustomEvent('search-term-enter', {
-        detail: {
-          term: this.term,
-        },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-
+  /** Put the selected value in value and label, create new-suggestion-selected event, and hide suggestion
+   * @param {Object} suggestion - Symple{term, alias_of}, Gene{slias_of, highlight, id, name, symbol}
+   * @private */
   _select = (suggestion) => {
     this.value = suggestion[this._searchFieldOptions.valueMappings.valueKey];
     this.label = suggestion[this._searchFieldOptions.valueMappings.labelKey];
@@ -283,43 +257,62 @@ class SearchFieldtWithSuggestions extends LitElement {
         composed: true,
       })
     );
+  };
+
+  /** (Only SimpleSearch) Search without suggestions, create search-term-enter event and hide suggest after event firing
+   * @private
+   * @param {string} term - input value */
+  _apiWithoutSelect = (term) => {
+    this.dispatchEvent(
+      new CustomEvent('search-term-enter', {
+        detail: term,
+        bubbles: true,
+        composed: true,
+      })
+    );
     this._hideSuggestions();
   };
 
-  // #apiWithoutSelect = (term) => {
-  //   this.dispatchEvent(
-  //     new CustomEvent('term-enter', {
-  //       detail: term,
-  //       bubbles: true,
-  //       composed: true,
-  //     })
-  //   );
-  //   this._hideSuggestions();
-  // };
-
+  /** e.detail: Symple{term, alias_of}, Gene{slias_of, highlight, id, name, symbol}
+   * @private */
   _handleSuggestionSelected = (e) => {
     this._select(e.detail);
   };
 
+  /** Put the characters input in this.term, (Only SimpleSearch)create imput-term event, hide suggestions if the length is less than 3, and empty suggestData
+   * @private */
   _handleInput(e) {
     this.term = e.data;
+    this.dispatchEvent(
+      new CustomEvent('imput-term', {
+        detail: e.data,
+        bubbles: true,
+        composed: true,
+      })
+    );
     if (this.term.length < 3) {
       this._hideSuggestions();
       this.suggestData = [];
     }
   }
 
+  /** Initialize currentSuggestion position when input is clicked.
+   * @private */
   _handleClick() {
     this.currentSuggestionIndex = -1;
     this.currentSuggestionColumnIndex = 0;
   }
 
+  /** Display suggestions, if the input character is greater than 3 when the focus on.
+   * @private */
   _handleFocusIn() {
     if (this.term.length > 3) {
       this.showSuggestions = true;
     }
   }
 
+  /** Hide suggestions when focus moves away from input
+   * @private */
   _handleFocusOut() {
     this._hideSuggestions();
   }
@@ -327,13 +320,13 @@ class SearchFieldtWithSuggestions extends LitElement {
   render() {
     return html`
       <search-field-only
-        @change=${debounce(this._handleInput, 300)}
+        @change=${this._handleInput}
         @click=${this._handleClick}
         @focusin=${this._handleFocusIn}
         @focusout=${this._handleFocusOut}
         @keydown=${this._handleUpDownKeys}
         .placeholder=${this.placeholder}
-        .value=${this.term}
+        value=${this.term}
         exportparts="input-field"
       ></search-field-only>
       <div class="suggestions-container">
@@ -362,10 +355,6 @@ class SearchFieldtWithSuggestions extends LitElement {
           : nothing}
       </div>
     `;
-  }
-
-  setTerm(term) {
-    this.label = term;
   }
 }
 

@@ -3,8 +3,9 @@ import { customElement } from 'lit/decorators.js';
 import { ref, createRef } from 'lit/directives/ref.js';
 import SimpleSearchStyle from '../../../../stylesheets/object/component/search-field-only.scss';
 
+/** Class to create a only search field */
 @customElement('search-field-only')
-export default class SearchFieldOnly extends LitElement {
+class SearchFieldOnly extends LitElement {
   static styles = [SimpleSearchStyle];
   _inputRef = createRef();
 
@@ -41,6 +42,7 @@ export default class SearchFieldOnly extends LitElement {
 
     this.value = '';
     this.placeholder = placeholder;
+    this.term = '';
 
     //varieent idで検索するとき
     if (element) {
@@ -48,6 +50,10 @@ export default class SearchFieldOnly extends LitElement {
     }
   }
 
+  /**
+   * @private
+   * @param {Event} e
+   */
   _handleInput(e) {
     this.value = e.target.value;
 
@@ -86,3 +92,5 @@ export default class SearchFieldOnly extends LitElement {
     </div>`;
   }
 }
+
+export default SearchFieldOnly;

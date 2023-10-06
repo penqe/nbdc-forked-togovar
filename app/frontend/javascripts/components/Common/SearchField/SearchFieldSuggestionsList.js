@@ -12,11 +12,11 @@ import { scrollMeUp } from './scrollMeUp';
 class SearchFieldSuggestionsList extends LitElement {
   static styles = [Styles];
   /** @property {Array} suggestData - suggestions data */
-  @property()
+  @property({ type: Array })
   suggestData = [];
 
   /** @property {numbar} highlightedSuggestionIndex - Highlighted item's index (by keys) */
-  @property()
+  @property({ type: Number })
   highlightedSuggestionIndex = -1;
 
   /** @property {string} itemIdKey - What of an item to map to dispatched event's detail.id */
