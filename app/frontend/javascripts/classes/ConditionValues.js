@@ -8,6 +8,9 @@ import ConditionValueEditorDisease from './ConditionValueEditorDisease.js';
 import { CONDITION_TYPE } from '../definition.js';
 
 export default class ConditionValues {
+  /**
+   * @param {ConditionItemView} conditionView
+   * @param {*} defaultValues */
   constructor(conditionView, defaultValues) {
     this._conditionView = conditionView;
     this._editors = [];
