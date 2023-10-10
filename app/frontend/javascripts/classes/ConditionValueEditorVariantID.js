@@ -1,14 +1,11 @@
 import ConditionValueEditor from './ConditionValueEditor.js';
 import SearchFieldOnly from '../components/Common/SearchField/SearchFieldOnly.js';
 
-/**
- * Variant ID editing screen
- */
+/** Variant ID editing screen */
 class ConditionValueEditorVariantID extends ConditionValueEditor {
   /**
    * @param {ConditionValues} valuesView - _cancelButton{HTMLButtonElement}, _conditionView{ConditionItemView}, _editors{ConditionValueEditorVariantID[]}, _okButton{HTMLButtonElement}, _sections{HTMLDivElement}
-   * @param {String} conditionType - "id"
-   */
+   * @param {String} conditionType - "id" */
   constructor(valuesView, conditionType) {
     super(valuesView, conditionType);
 
@@ -44,22 +41,21 @@ class ConditionValueEditorVariantID extends ConditionValueEditor {
   }
 
   // public methods
-  /**
-   * Variant ID does not have _searchFieldView.term and does not manage lastValue, so it is always " "
+  /** Variant ID does not have _searchFieldView.term and does not manage lastValue, so it is always " "
    * See {@link ConditionValues} startToEditCondition
    * @public
    * @property {string} _lastValue
    */
   keepLastValues() {
-    this._lastValue = this._searchFieldView.term || '';
+    this._lastValueViews = this._valueViews;
   }
 
   /**
    * See {@link ConditionValues} _clickCancelButton with not isFirst
    * @public */
   restore() {
-    this._searchFieldView.setTerm(this._lastValue);
-    // this._update();
+    this._updateValueViews(this._lastValueViews);
+    this._update();
   }
 
   /**
