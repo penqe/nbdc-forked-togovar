@@ -37,7 +37,7 @@ class ConditionValueEditor {
   /**
    * Delete value when button.delete is pressed on edit screen
    * Use the update function for this._valuesView and change it so that if isFirstTime === true and the length is 0, the ok button cannot be pressed.
-   * isFirstTime is a private class, so it is not a good idea to use it. I want to know how to use state!!!!!!!!!!!!
+   * isFirstTime is a private class, so it is not a good idea to use it.
    * @private
    * @param {Event} e */
   #handleDeleteValue(e) {
@@ -52,8 +52,7 @@ class ConditionValueEditor {
   /** Create an element for the edit screen.
    * @protected
    * @param {"checkboxes-editor-view"|"columns-editor-view"|"disease-editor-view"|"frequency-count-editor-view"|"location-editor-view"|"text-field-editor-view"} className
-   * @param {string} html - \<header>Select [ConditionType]\</header>\<div class="body">\</div>
-   */
+   * @param {string} html - \<header>Select [ConditionType]\</header>\<div class="body">\</div> */
   _createElement(className, html) {
     this._el = document.createElement('section');
     this._el.classList.add(className);
