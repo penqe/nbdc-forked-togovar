@@ -1,5 +1,3 @@
-import { LitElement } from 'lit';
-import { customElement } from 'lit/decorators.js';
 import ConditionValueEditorCheckboxes from './ConditionValueEditorCheckboxes.js';
 import ConditionValueEditorColumns from './ConditionValueEditorColumns.js';
 import ConditionValueEditorGene from './ConditionValueEditorGene.js';
@@ -9,10 +7,8 @@ import ConditionValueEditorLocation from './ConditionValueEditorLocation.js';
 import ConditionValueEditorDisease from './ConditionValueEditorDisease.js';
 import { CONDITION_TYPE } from '../definition.js';
 
-@customElement('condition-values')
-export default class ConditionValues extends LitElement {
+export default class ConditionValues {
   constructor(conditionView, defaultValues) {
-    super();
     this._conditionView = conditionView;
     this._editors = [];
 
@@ -32,16 +28,12 @@ export default class ConditionValues extends LitElement {
     this._okButton = buttons.querySelector(
       ':scope > .button-view:nth-child(1)'
     );
-    this._cancelButton = buttons.querySelector(
-      ':scope > .button-view:nth-child(2)'
-    );
 
     // events
     this._okButton.addEventListener('click', this._clickOkButton.bind(this));
-    this._cancelButton.addEventListener(
-      'click',
-      this._clickCancelButton.bind(this)
-    );
+    buttons
+      .querySelector(':scope > .button-view:nth-child(2)')
+      .addEventListener('click', this._clickCancelButton.bind(this));
 
     // initialization by types
     // TODO: conditionType は ADVANCED_CONDITIONS[conditionView.conditionType].type を参照して処理をスイッチさせたい
@@ -125,10 +117,8 @@ export default class ConditionValues extends LitElement {
     }
   }
 
-  /**
-   * Whether isValid(whether condition has a value) is true or false and okButton is disabled
-   * @param {boolean} isValid
-   */
+  /** Whether isValid(whether condition has a value) is true or false and okButton is disabled
+   * @param {boolean} isValid */
   update(isValid) {
     if (this._conditionView.conditionType === CONDITION_TYPE.dataset) {
       isValid = this._editors.every((editor) => {
@@ -140,13 +130,6 @@ export default class ConditionValues extends LitElement {
     } else {
       this._okButton.classList.add('-disabled');
     }
-
-    // if (
-    //   this._conditionView.conditionType === 'id' &&
-    //   !this._conditionView._values.hasChildNodes()
-    // ) {
-    //   this._cancelButton.classList.add('-disabled');
-    // }
   }
 
   // private methods
