@@ -1,16 +1,18 @@
+import { LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 import ConditionValueEditorCheckboxes from './ConditionValueEditorCheckboxes.js';
 import ConditionValueEditorColumns from './ConditionValueEditorColumns.js';
-import ConditionValueEditorTextField from './ConditionValueEditorTextField.js';
+import ConditionValueEditorGene from './ConditionValueEditorGene.js';
+import ConditionValueEditorVariantID from './ConditionValueEditorVariantID.js';
 import ConditionValueEditorFrequencyCount from './ConditionValueEditorFrequencyCount.js';
 import ConditionValueEditorLocation from './ConditionValueEditorLocation.js';
-// import {ADVANCED_CONDITIONS} from '../global.js';
-import { CONDITION_TYPE } from '../definition.js';
 import ConditionValueEditorDisease from './ConditionValueEditorDisease.js';
+import { CONDITION_TYPE } from '../definition.js';
 
-// const DISEASE_API_URL =
-//   'https://togovar-stg.biosciencedbc.jp/api/search/disease?term=';
-export default class ConditionValues {
+@customElement('condition-values')
+export default class ConditionValues extends LitElement {
   constructor(conditionView, defaultValues) {
+    super();
     this._conditionView = conditionView;
     this._editors = [];
 
@@ -30,12 +32,16 @@ export default class ConditionValues {
     this._okButton = buttons.querySelector(
       ':scope > .button-view:nth-child(1)'
     );
+    this._cancelButton = buttons.querySelector(
+      ':scope > .button-view:nth-child(2)'
+    );
 
     // events
     this._okButton.addEventListener('click', this._clickOkButton.bind(this));
-    buttons
-      .querySelector(':scope > .button-view:nth-child(2)')
-      .addEventListener('click', this._clickCancelButton.bind(this));
+    this._cancelButton.addEventListener(
+      'click',
+      this._clickCancelButton.bind(this)
+    );
 
     // initialization by types
     // TODO: conditionType は ADVANCED_CONDITIONS[conditionView.conditionType].type を参照して処理をスイッチさせたい
@@ -85,16 +91,13 @@ export default class ConditionValues {
 
       case CONDITION_TYPE.gene_symbol:
         this._editors.push(
-          new ConditionValueEditorTextField(
-            this,
-            this._conditionView.conditionType
-          )
+          new ConditionValueEditorGene(this, this._conditionView.conditionType)
         );
         break;
 
       case CONDITION_TYPE.variant_id:
         this._editors.push(
-          new ConditionValueEditorTextField(
+          new ConditionValueEditorVariantID(
             this,
             this._conditionView.conditionType
           )
@@ -115,13 +118,17 @@ export default class ConditionValues {
 
   // public methods
 
+  // save values
   startToEditCondition() {
-    // save values
     for (const editor of this._editors) {
       editor.keepLastValues();
     }
   }
 
+  /**
+   * Whether isValid(whether condition has a value) is true or false and okButton is disabled
+   * @param {boolean} isValid
+   */
   update(isValid) {
     if (this._conditionView.conditionType === CONDITION_TYPE.dataset) {
       isValid = this._editors.every((editor) => {
@@ -133,13 +140,26 @@ export default class ConditionValues {
     } else {
       this._okButton.classList.add('-disabled');
     }
+
+    // if (
+    //   this._conditionView.conditionType === 'id' &&
+    //   !this._conditionView._values.hasChildNodes()
+    // ) {
+    //   this._cancelButton.classList.add('-disabled');
+    // }
   }
 
   // private methods
-
   _clickOkButton(e) {
     e.stopImmediatePropagation();
-    this._conditionView.doneEditing();
+    if (
+      !this._conditionView.isFirstTime &&
+      !this._conditionView._values.hasChildNodes()
+    ) {
+      this._conditionView.remove();
+    } else {
+      this._conditionView.doneEditing();
+    }
   }
 
   _clickCancelButton(e) {

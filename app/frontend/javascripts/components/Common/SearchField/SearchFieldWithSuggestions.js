@@ -24,15 +24,45 @@ import { debounce } from '../../../utils/debounce';
 @customElement('search-field-with-suggestions')
 class SearchFieldtWithSuggestions extends LitElement {
   static styles = [Styles];
+
   /**
    * @param {string} placeholder - Placeholder text
    * @param {string} suggestAPIURL - URL to fetch suggestions from
    * @param {string} suggestAPIQueryParam - Query parameter to be used for the API call
    * @param {HTMLElement} element - HTML element to which the search field is attached
+   * @param {SearchFieldOptions} options - Options for the search field
    */
+  constructor(
+    placeholder,
+    suggestAPIURL,
+    suggestAPIQueryParam,
+    element,
+    options
+  ) {
+    super();
+    this.placeholder = placeholder;
+    this.suggestAPIURL = suggestAPIURL;
+    this.suggestAPIQueryParam = suggestAPIQueryParam;
+    this._searchFieldOptions = options;
+
+    if (element) {
+      element.appendChild(this);
+      if (this.suggestAPIQueryParam) {
+        this._getSuggestURL = (text) => {
+          const url = new URL(this.suggestAPIURL);
+          url.searchParams.set(this.suggestAPIQueryParam, text);
+          return url.toString();
+        };
+      } else {
+        this._getSuggestURL = (text) => {
+          return `${this.suggestAPIURL}/${text}`;
+        };
+      }
+    }
+  }
 
   /** value of the selected suggestion */
-  @property({ type: String | Number })
+  @property({ type: String })
   value = '';
 
   /** label of selected suggestion */

@@ -1,24 +1,17 @@
-// import ConditionValueEditor from './ConditionValueEditor.js';
-import { LitElement, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import ConditionValueEditor from '../components/ConditionValueEditor.js';
-import '../components/Common/SearchField/SearchFieldWithSuggestions.js';
+import ConditionValueEditor from './ConditionValueEditor.js';
+import SearchFieldWithSuggestions from '../components/Common/SearchField/SearchFieldWithSuggestions.js';
 
 /** Gene and variant editing screen */
-@customElement('condition-value-editor-gene')
-class ConditionValueEditorGene extends ConditionValueEditor(LitElement) {
-  @property({ type: Object }) valuesView;
-  @property({ type: String }) conditionType;
-  /** value of the selected suggestion */
-  @state({ type: Number }) _value;
-  /** label of the selected suggestion */
-  @state({ type: String }) _label;
-
+class ConditionValueEditorGene extends ConditionValueEditor {
   /**
    * @param {ConditionValues} valuesView
    * @param {String} conditionType - "gene" */
   constructor(valuesView, conditionType) {
     super(valuesView, conditionType);
+    /** @property {number} _value - value of the selected suggestion */
+    this._value;
+    /** @property {string} _label - label of the selected suggestion */
+    this._label;
 
     // HTML
     this._createElement(
@@ -27,10 +20,29 @@ class ConditionValueEditorGene extends ConditionValueEditor(LitElement) {
       <div class="body"></div>`
     );
 
-    this._body.appendChild(this);
+    this._searchFieldView = new SearchFieldWithSuggestions(
+      'BRCA2',
+      'https://grch37.togovar.org/api/search/gene',
+      'term',
+      this._body,
+      {
+        valueMappings: {
+          valueKey: 'id',
+          labelKey: 'symbol',
+          aliasOfKey: 'alias_of',
+        },
+      }
+    );
+
+    this._searchFieldView.addEventListener(
+      'new-suggestion-selected',
+      this._handleSuggestSelect
+    );
   }
 
-  /** Add condition-item-value-view with selected suggestion data */
+  /** Add condition-item-value-view with selected suggestion data
+   * @private
+   * @params {CustomEvent} */
   _handleSuggestSelect = (e) => {
     this._value = e.detail.id;
     this._label = e.detail.label;
@@ -70,26 +82,6 @@ class ConditionValueEditorGene extends ConditionValueEditor(LitElement) {
   /** Valid only if there are some condition-item-value-view 's in the valuesView */
   get isValid() {
     return this._valueViews.length > 0;
-  }
-
-  render() {
-    return html`
-      <search-field-with-suggestions
-        exportparts="input-field"
-        .placeholder=${'BRCA2'}
-        .suggestAPIURL=${'https://grch37.togovar.org/api/search/gene'}
-        .suggestAPIQueryParam=${'term'}
-        .options=${{
-          valueMappings: {
-            valueKey: 'id',
-            labelKey: 'symbol',
-            aliasOfKey: 'alias_of',
-          },
-        }}
-        @new-suggestion-selected=${this._handleSuggestSelect}
-      >
-      </search-field-with-suggestions>
-    `;
   }
 }
 
