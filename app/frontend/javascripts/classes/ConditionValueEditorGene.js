@@ -1,5 +1,6 @@
 import ConditionValueEditor from './ConditionValueEditor.js';
 import SearchFieldWithSuggestions from '../components/Common/SearchField/SearchFieldWithSuggestions.js';
+import { API_URL } from '../global.js';
 
 /** Gene and variant editing screen */
 class ConditionValueEditorGene extends ConditionValueEditor {
@@ -22,7 +23,7 @@ class ConditionValueEditorGene extends ConditionValueEditor {
 
     this._searchFieldView = new SearchFieldWithSuggestions(
       'BRCA2',
-      'https://grch37.togovar.org/api/search/gene',
+      `${API_URL}/api/search/${conditionType}`,
       'term',
       this._body,
       {
