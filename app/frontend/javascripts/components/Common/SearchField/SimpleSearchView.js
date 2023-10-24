@@ -102,13 +102,20 @@ class SimpleSearchView extends LitElement {
   /** @property {boolean} _hideSuggestions - Whether to hide suggestions */
   @state() _hideSuggestions = true;
 
-  /** Search using StoreManager's setSimpleSearchCondition. If chr is included, delete it.
+  /** Search using StoreManager's setSimpleSearchCondition. And regex.
    * @private
    * @param {string} term - value to search for */
   _search(term) {
-    const channelPattern = /chr\d+:\d+/i;
+    const channelPattern =
+      /(Chr|chr|ch|Cr|cs)(?:[1-9]|1[0-9]|2[0-2]|X|Y|M|MT):\d+/i;
+    const convertMTPattern = /M:\d+/i;
+
     if (channelPattern.test(term)) {
-      term = term.replace(/chr/i, '');
+      term = term.replace(/Chr|chr|ch|Cr|cs/i, '');
+
+      if (convertMTPattern.test(term)) {
+        term = term.replace(/M/i, 'MT');
+      }
     }
     StoreManager.setSimpleSearchCondition('term', term);
   }
