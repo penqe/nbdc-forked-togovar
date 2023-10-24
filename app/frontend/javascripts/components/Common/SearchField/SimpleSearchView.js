@@ -107,7 +107,7 @@ class SimpleSearchView extends LitElement {
    * @param {string} term - value to search for */
   _search(term) {
     const channelPattern =
-      /(Chr|chr|ch|Cr|cs)(?:[1-9]|1[0-9]|2[0-2]|X|Y|M|MT):\d+/i;
+      /(Chr|chr|ch|Cr|cs)([1-9]|1[0-9]|2[0-2]|X|Y|M|MT):\d+/i;
     const convertMTPattern = /M:\d+/;
 
     if (channelPattern.test(term)) {
