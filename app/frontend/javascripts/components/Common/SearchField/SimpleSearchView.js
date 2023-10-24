@@ -108,15 +108,16 @@ class SimpleSearchView extends LitElement {
   _search(term) {
     const channelPattern =
       /(Chr|chr|ch|Cr|cs)(?:[1-9]|1[0-9]|2[0-2]|X|Y|M|MT):\d+/i;
-    const convertMTPattern = /M:\d+/i;
+    const convertMTPattern = /M:\d+/;
 
     if (channelPattern.test(term)) {
-      term = term.replace(/Chr|chr|ch|Cr|cs/i, '');
+      term = term.replace(/Chr|chr|ch|Cr|cs/i, '').toUpperCase();
 
       if (convertMTPattern.test(term)) {
-        term = term.replace(/M/i, 'MT');
+        term = term.replace(/M/, 'MT');
       }
     }
+
     StoreManager.setSimpleSearchCondition('term', term);
   }
 
