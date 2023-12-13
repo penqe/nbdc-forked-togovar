@@ -72,6 +72,42 @@ export default class PanelViewCheckList extends PanelView {
       <li class="separator"><hr></li>
       `;
     }
+    if (this.kind === 'sift') {
+      html += `
+      <li class="item">
+        <label class="label">
+          <input type="checkbox" value="NS" checked>
+          Not in SIFT
+        </label>
+        <span class="value"></span>
+      </li>
+      <li class="separator"><hr></li>
+      `;
+    }
+    if (this.kind === 'polyphen') {
+      html += `
+      <li class="item">
+        <label class="label">
+          <input type="checkbox" value="NP" checked>
+          Not in PolyPhen
+        </label>
+        <span class="value"></span>
+      </li>
+      <li class="separator"><hr></li>
+      `;
+    }
+    if (this.kind === 'alpha_missense') {
+      html += `
+      <li class="item">
+        <label class="label">
+          <input type="checkbox" value="NA" checked>
+          Not in AlphaMissense
+        </label>
+        <span class="value"></span>
+      </li>
+      <li class="separator"><hr></li>
+      `;
+    }
     html += conditionMaster.items.map(item => `
     <li class="item">
       <label class="label">
