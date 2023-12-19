@@ -38,8 +38,8 @@ export default class Configuration {
 
     // コンフィグ開く
     document.querySelector('#GlobalHeader > .menus > .config > .menu-button').addEventListener('click', () => {
-      this.open();
-    });
+        this.open();
+      });
     // コンフィグ閉じる
     this.bg.addEventListener('click', () => {
       this.close();
@@ -64,7 +64,11 @@ export default class Configuration {
         // デフォルト値作成
         stored = configure.constant.map(item => {
           const newItem = Object.assign({}, item);
-          newItem.isUsed = true;
+          if (newItem.id === 'type') {
+            newItem.isUsed = false;
+          } else {
+            newItem.isUsed = true;
+          }
           return newItem;
         });
       }
@@ -72,13 +76,13 @@ export default class Configuration {
       configure.container.innerHTML = stored.map(item => `<li><label><input type="checkbox" value="${item.id}"${item.isUsed ? ' checked' : ''}>${item.label}</label></li>`).join('');
       // input イベント
       configure.container.querySelectorAll('li > label > input').forEach(input => {
-        input.addEventListener('change', e => {
-          const stored = StoreManager.getData(configure.storeKey);
-          const item = stored.find(item => item.id === e.target.value);
-          item.isUsed = e.target.checked;
-          StoreManager.setData(configure.storeKey, stored);
-        })
-      });
+          input.addEventListener('change', e => {
+            const stored = StoreManager.getData(configure.storeKey);
+            const item = stored.find(item => item.id === e.target.value);
+            item.isUsed = e.target.checked;
+            StoreManager.setData(configure.storeKey, stored);
+          })
+        });
 
       // set to store
       StoreManager.setData(configure.storeKey, stored);

@@ -139,7 +139,7 @@ export default class ResultsRowView {
     // AlphaMissense
     this.tdAlphaMissense = this.tr.querySelector('td.alpha_missense');
     this.tdAlphaMissenseFunction =
-    this.tdAlphaMissense.querySelector('.variant-function');
+      this.tdAlphaMissense.querySelector('.variant-function');
     // Clinical significance
     this.tdClinical = this.tr.querySelector('td.clinical_significance');
     this.tdClinicalSign = this.tdClinical.querySelector(
@@ -282,6 +282,52 @@ export default class ResultsRowView {
             }
           }
           break;
+        case 'clinical_significance':
+          {
+            if (result.significance && result.significance.length) {
+              this.tdClinical.dataset.remains = result.significance.length - 1;
+              this.tdClinicalSign.dataset.sign =
+                result.significance[0].interpretations[0];
+              this.tdClinicalAnchor.textContent =
+                result.significance[0].condition;
+              this.tdClinicalAnchor.setAttribute(
+                'href',
+                `/disease/${result.significance[0].medgen}`
+              );
+            } else {
+              this.tdClinical.dataset.remains = 0;
+              this.tdClinicalSign.dataset.sign = '';
+              this.tdClinicalAnchor.textContent = '';
+              this.tdClinicalAnchor.setAttribute('href', '');
+            }
+          }
+          break;
+        case 'alpha_missense':
+          {
+            const alphaMissenses = result.transcripts?.filter((x) =>
+              Number.isFinite(x.alpha_missense)
+            );
+            if (alphaMissenses && alphaMissenses.length > 0) {
+              this.tdAlphaMissense.dataset.remains = alphaMissenses.length - 1;
+              this.tdAlphaMissenseFunction.textContent = result.alphamissense;
+              switch (true) {
+                case result.alphamissense < 0.34:
+                  this.tdAlphaMissenseFunction.dataset.function = 'LB';
+                  break;
+                case result.alphamissense > 0.564:
+                  this.tdAlphaMissenseFunction.dataset.function = 'LP';
+                  break;
+                default:
+                  this.tdAlphaMissenseFunction.dataset.function = 'AMBIGUOUS';
+                  break;
+              }
+            } else {
+              this.tdAlphaMissense.dataset.remains = 0;
+              this.tdAlphaMissenseFunction.textContent = '';
+              this.tdAlphaMissenseFunction.dataset.function = '';
+            }
+          }
+          break;
         case 'sift':
           {
             const sifts = result.transcripts?.filter((x) =>
@@ -325,49 +371,6 @@ export default class ResultsRowView {
               this.tdPolyphen.dataset.remains = 0;
               this.tdPolyphenFunction.textContent = '';
               this.tdPolyphenFunction.dataset.function = '';
-            }
-          }
-          break;
-          case 'alpha_missense':
-            {
-              const alphaMissenses = result.transcripts?.filter((x) =>
-                Number.isFinite(x.alpha_missense)
-              );
-              if (alphaMissenses && alphaMissenses.length > 0) {
-                this.tdAlphaMissense.dataset.remains = alphaMissenses.length - 1;
-                this.tdAlphaMissenseFunction.textContent = result.alphamissense;
-                switch (true) {
-                  case result.alphamissense < 0.34:
-                    this.tdAlphaMissenseFunction.dataset.function = 'LB';
-                    break;
-                  case result.alphamissense > 0.564:
-                    this.tdAlphaMissenseFunction.dataset.function = 'LP';
-                    break;
-                  default:
-                    this.tdAlphaMissenseFunction.dataset.function = 'AMBIGUOUS';
-                    break;
-                }
-              } else {
-                this.tdAlphaMissense.dataset.remains = 0;
-                this.tdAlphaMissenseFunction.textContent = '';
-                this.tdAlphaMissenseFunction.dataset.function = '';
-              }
-            }
-            break;
-        case 'clinical_significance':
-          {
-            if (result.significance && result.significance.length) {
-              this.tdClinical.dataset.remains = result.significance.length - 1;
-              this.tdClinicalSign.dataset.sign =
-                result.significance[0].interpretations[0];
-              this.tdClinicalAnchor.textContent =
-                result.significance[0].condition;
-              this.tdClinicalAnchor.setAttribute('href', `/disease/${result.significance[0].medgen}`);
-            } else {
-              this.tdClinical.dataset.remains = 0;
-              this.tdClinicalSign.dataset.sign = '';
-              this.tdClinicalAnchor.textContent = '';
-              this.tdClinicalAnchor.setAttribute('href', '');
             }
           }
           break;
