@@ -64,11 +64,7 @@ export default class Configuration {
         // デフォルト値作成
         stored = configure.constant.map(item => {
           const newItem = Object.assign({}, item);
-          if (newItem.id === 'type') {
-            newItem.isUsed = false;
-          } else {
-            newItem.isUsed = true;
-          }
+          newItem.isUsed = newItem.id !== 'type';
           return newItem;
         });
       }
