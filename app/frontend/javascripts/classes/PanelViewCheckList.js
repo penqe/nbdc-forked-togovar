@@ -72,12 +72,24 @@ export default class PanelViewCheckList extends PanelView {
       <li class="separator"><hr></li>
       `;
     }
+    if (this.kind === 'alpha_missense') {
+      html += `
+      <li class="item">
+        <label class="label">
+          <input type="checkbox" value="N" checked>
+          Without AlphaMissense
+        </label>
+        <span class="value"></span>
+      </li>
+      <li class="separator"><hr></li>
+      `;
+    }
     if (this.kind === 'sift') {
       html += `
       <li class="item">
         <label class="label">
-          <input type="checkbox" value="NS" checked>
-          Not in SIFT
+          <input type="checkbox" value="N" checked>
+          Without SIFT
         </label>
         <span class="value"></span>
       </li>
@@ -88,20 +100,8 @@ export default class PanelViewCheckList extends PanelView {
       html += `
       <li class="item">
         <label class="label">
-          <input type="checkbox" value="NP" checked>
-          Not in PolyPhen
-        </label>
-        <span class="value"></span>
-      </li>
-      <li class="separator"><hr></li>
-      `;
-    }
-    if (this.kind === 'alpha_missense') {
-      html += `
-      <li class="item">
-        <label class="label">
-          <input type="checkbox" value="NA" checked>
-          Not in AlphaMissense
+          <input type="checkbox" value="N" checked>
+          Without PolyPhen
         </label>
         <span class="value"></span>
       </li>
@@ -116,15 +116,15 @@ export default class PanelViewCheckList extends PanelView {
         ${this.kind === 'significance' ? `<div class="clinical-significance" data-value="${item.id}"></div>` : ''}
         ${this.kind === 'sift' ? `<div class="variant-function _width_5em _align-center" data-function="${item.id}">${ { D: '&lt; 0.05', T: '&ge; 0.05' }[item.id] }</div>` : ''}
         ${this.kind === 'polyphen' ? `<div class="variant-function _width_5em _align-center" data-function="${item.id}">${ { PROBD: '&gt; 0.908', POSSD: '&gt; 0.446', B: '&le; 0.446', U: '&ensp;&ensp;' }[item.id] }</div>` : ''}
-        ${this.kind === 'alpha_missense' ? `<div class="variant-function _width_5em _align-center" data-function="${item.id}">${{ LP: '&gt; 0.564', AMBIGUOUS: '&ge; 0.340', LB: '&lt; 0.340' }[item.id]}</div>` : ''}
+        ${this.kind === 'alpha_missense' ? `<div class="variant-function _width_5em _align-center" data-function="${item.id}">${{ LP: '&gt; 0.564', A: '&ge; 0.340', LB: '&lt; 0.340' }[item.id]}</div>` : ''}
         ${item.label}
       </label>
       <span class="value"></span>
     </li>
     `).join('');
     this.elm.querySelector('.content > .checklist-values').insertAdjacentHTML('beforeend', html);
-    // clinical significance で not in clinvar の重複を削除
-    if (this.kind === 'significance') {
+    // not検索の重複を削除
+    if (this.kind === 'significance' || this.kind === 'alpha_missense' || this.kind === 'sift' || this.kind === 'polyphen') {
       this.elm.querySelector('.content > .checklist-values > .item:nth-child(5)').remove();
     }
   }

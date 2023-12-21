@@ -607,13 +607,19 @@
     "type": "array",
     "items": [
       {
+        "id": "N",
+        "label": "Without AlphaMissense",
+        "type": "boolean",
+        "default": "1"
+      },
+      {
         "id": "LP",
         "label": "Likely pathogenic",
         "type": "boolean",
         "default": "1"
       },
       {
-        "id": "AMBIGUOUS",
+        "id": "A",
         "label": "Ambiguous",
         "type": "boolean",
         "default": "1"
@@ -631,6 +637,12 @@
     "label": "SIFT",
     "type": "array",
     "items": [
+      {
+        "id": "N",
+        "label": "Without SIFT",
+        "type": "boolean",
+        "default": "1"
+      },
       {
         "id": "D",
         "label": "Deleterious",
@@ -650,6 +662,12 @@
     "label": "PolyPhen",
     "type": "array",
     "items": [
+      {
+        "id": "N",
+        "label": "PolyPhen",
+        "type": "boolean",
+        "default": "1"
+      },
       {
         "id": "PROBD",
         "label": "Probably damaging",
